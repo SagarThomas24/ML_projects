@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Prediction</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f2f5;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e0e3e8 100%);
+            background:darkgreen;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Form Container */
+        #prediction-form {
+            background: #fff;
+            padding: 20px 30px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            background: #121212;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Title */
+        h1 {
+            color: green;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        /* Form Elements */
+        label {
+            color: green;
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        input[type="number"]:focus,
+        select:focus {
+            border-color: #0066cc;
+            box-shadow: 0 0 5px rgba(0, 102, 204, 0.3);
+        }
+
+        button[type="submit"] {
+            background-color: #0066cc;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #004c99;
+        }
+
+        /* Result Styling */
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="prediction-form">
+        <h1>Diabetes Prediction</h1>
+        <form id="form">
+            <label for="glucose">Glucose:</label>
+            <input type="number" id="glucose" name="glucose" required>
+
+            <label for="insulin">Insulin:</label>
+            <input type="number" id="insulin" name="insulin" required>
+
+            <label for="bmi">BMI:</label>
+            <input type="number" step="0.1" id="bmi" name="bmi" required>
+
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" required>
+
+            <label for="model">Choose Model:</label>
+            <select id="model" name="model" required>
+                <option value="perceptron">Perceptron</option>
+                <option value="naive_bayes">Naive Bayes</option>
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <h2 id="result"></h2>
+    </div>
+
+    <script>
+        document.getElementById('form').onsubmit = async function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Convert input values to float
+            const glucose = parseFloat(document.getElementById('glucose').value);
+            const insulin = parseFloat(document.getElementById('insulin').value);
+            const bmi = parseFloat(document.getElementById('bmi').value);
+            const age = parseFloat(document.getElementById('age').value);
+            const model = document.getElementById('model').value; // Get selected model
+
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ glucose, insulin, bmi, age, model }) // Send model selection
+            });
+
+            const result = await response.json();
+
+            // Display the prediction result with styled message
+            const displayResult = result.prediction === 1 ? "Type 1 " : "Type 0";
+            document.getElementById('result').innerText = `Prediction: ${displayResult}`;
+            document.getElementById('result').style.color = result.prediction === 1 ? "#cc0000" : "#009900";
+        };
+    </script>
+</body>
+</html>
